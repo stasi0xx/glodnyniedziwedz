@@ -62,10 +62,12 @@ export async function POST(req: Request) {
           });
 
           for (const toolCall of message.tool_calls) {
+            if (toolCall.type !== 'function') continue;
+            const fnCall = toolCall as OpenAI.Chat.ChatCompletionMessageToolCall & { type: 'function'; function: { name: string; arguments: string } };
             let result: string;
             try {
-              const input = JSON.parse(toolCall.function.arguments) as Record<string, string>;
-              result = handleToolCall(toolCall.function.name, input);
+              const input = JSON.parse(fnCall.function.arguments) as Record<string, string>;
+              result = handleToolCall(fnCall.function.name, input);
             } catch (toolErr) {
               console.error('[/api/chat] tool execution error:', toolErr);
               result = 'Błąd podczas wykonania narzędzia.';
