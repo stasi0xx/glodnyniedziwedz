@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
       const registerParam = tokenRow?.id ? `&register=${tokenRow.id}` : '';
 
       const session = await getStripe().checkout.sessions.create({
-        payment_method_types: site.payment.methods,
+        payment_method_types: site.payment.methods as import('stripe').Stripe.Checkout.SessionCreateParams.PaymentMethodType[],
         line_items: lineItems,
         mode: 'payment',
         success_url: `${baseUrl}/${locale}/success?orderId=${order.id}&session_id={CHECKOUT_SESSION_ID}${registerParam}`,

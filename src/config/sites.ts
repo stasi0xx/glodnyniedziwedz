@@ -152,6 +152,6 @@ const STRIPE_LOCALES = new Set([
   'th', 'tr', 'vi', 'zh',
 ]);
 
-export function toStripeLocale(locale: string): string {
-  return STRIPE_LOCALES.has(locale) ? locale : 'en';
+export function toStripeLocale(locale: string): import('stripe').Stripe.Checkout.SessionCreateParams['locale'] {
+  return (STRIPE_LOCALES.has(locale) ? locale : 'en') as import('stripe').Stripe.Checkout.SessionCreateParams['locale'];
 }
