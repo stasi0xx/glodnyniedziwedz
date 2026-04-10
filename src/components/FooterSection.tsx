@@ -1,23 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { getSiteConfig } from '@/config/sites';
 
 const siteConfig = getSiteConfig();
-const isHB = siteConfig.id === 'hongige-beer-migrant' || siteConfig.id === 'hongige-beer-office';
 
-const HB_CONTACT = {
-  companyName: 'Foodmarkt BV',
-  address: 'Blankenstein 265, 7943 PG Meppel, Netherlands',
-  phone: '+31 682595605',
-  phoneHref: 'tel:+31682595605',
-  emailInfo: 'info@foodmarkt.com',
-  emailOrder: 'order@foodmarkt.com',
-  coc: 'CoC: 78333490',
-  vat: 'VAT: NL861353730B01',
-  logo: '/images/hb-logo.png',
-  copyright: 'Foodmarkt BV / Hongerige Beer',
-};
 
 const GN_CONTACT = {
   phone: '+48 732 999 072',
@@ -32,6 +20,15 @@ export default function FooterSection() {
   const tFooter = useTranslations('footer');
   const tNav = useTranslations('nav');
 
+  const handleAnchorClick = (e: React.MouseEvent, id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      const top = el.getBoundingClientRect().top + window.scrollY - 64;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
+
   const scrollToMenu = () => {
     const el = document.getElementById('menu-section');
     if (el) {
@@ -45,7 +42,7 @@ export default function FooterSection() {
       {/* Footer CTA */}
       <section id="contact" className="bg-[#1B4332] px-6 py-16 relative overflow-hidden">
         <div className="absolute -bottom-12 -right-12 opacity-5 pointer-events-none select-none">
-          <img src={isHB ? HB_CONTACT.logo : GN_CONTACT.logo} alt="" className="w-96 h-auto" />
+          <img src={GN_CONTACT.logo} alt="" className="w-96 h-auto" />
         </div>
 
         <div className="mx-auto max-w-2xl text-center relative z-10">
@@ -58,15 +55,9 @@ export default function FooterSection() {
           >
             {tCta('cta')} →
           </button>
-          {isHB ? (
-            <p className="text-[#FDF6EC]/40 text-sm">
-              {HB_CONTACT.emailInfo} · {HB_CONTACT.phone}
-            </p>
-          ) : (
-            <p className="text-[#FDF6EC]/40 text-sm">
-              Dostawa Mon–Fri · biuro@glodnyniedzwiedz.pl · +48 732 999 072
-            </p>
-          )}
+          <p className="text-[#FDF6EC]/40 text-sm">
+            Dostawa Mon–Fri · biuro@glodnyniedzwiedz.pl · +48 732 999 072
+          </p>
         </div>
       </section>
 
@@ -81,12 +72,10 @@ export default function FooterSection() {
                 {tFooter('pages')}
               </p>
               <ul className="flex flex-col gap-4">
-                <li><a href="/#menu-section" className="text-sm text-white/60 hover:text-white transition-colors">{tNav('menu')}</a></li>
-                <li><a href="/#how-it-works" className="text-sm text-white/60 hover:text-white transition-colors">{tNav('howItWorks')}</a></li>
-                <li><a href="/#faq" className="text-sm text-white/60 hover:text-white transition-colors">{tNav('faq')}</a></li>
-                {!isHB && (
-                  <li><a href="/dla-firm" className="text-sm text-white/60 hover:text-white transition-colors">{tNav('forBusiness')}</a></li>
-                )}
+                <li><Link href="/#menu-section" onClick={(e) => handleAnchorClick(e, 'menu-section')} className="text-sm text-white/60 hover:text-white transition-colors">{tNav('menu')}</Link></li>
+                <li><Link href="/#how-it-works" onClick={(e) => handleAnchorClick(e, 'how-it-works')} className="text-sm text-white/60 hover:text-white transition-colors">{tNav('howItWorks')}</Link></li>
+                <li><Link href="/#faq" onClick={(e) => handleAnchorClick(e, 'faq')} className="text-sm text-white/60 hover:text-white transition-colors">{tNav('faq')}</Link></li>
+                <li><Link href="/dla-firm" className="text-sm text-white/60 hover:text-white transition-colors">{tNav('forBusiness')}</Link></li>
               </ul>
             </div>
 
@@ -96,8 +85,8 @@ export default function FooterSection() {
                 {tFooter('legalLinks')}
               </p>
               <ul className="flex flex-col gap-4">
-                <li><a href="/terms" className="text-sm text-white/60 hover:text-white transition-colors">{tFooter('termsOfService')}</a></li>
-                <li><a href="/privacy" className="text-sm text-white/60 hover:text-white transition-colors">{tFooter('privacyPolicy')}</a></li>
+                <li><Link href="/terms" className="text-sm text-white/60 hover:text-white transition-colors">{tFooter('termsOfService')}</Link></li>
+                <li><Link href="/privacy" className="text-sm text-white/60 hover:text-white transition-colors">{tFooter('privacyPolicy')}</Link></li>
               </ul>
             </div>
 
@@ -106,26 +95,20 @@ export default function FooterSection() {
               <p className="font-bold text-white mb-6 uppercase tracking-wider text-xs">
                 {tFooter('contact')}
               </p>
-              {isHB ? (
-                <ul className="flex flex-col gap-4">
-                  <li><a href={HB_CONTACT.phoneHref} className="text-sm text-white/60 hover:text-white transition-colors">{HB_CONTACT.phone}</a></li>
-                  <li><a href={`mailto:${HB_CONTACT.emailInfo}`} className="text-sm text-white/60 hover:text-white transition-colors">{HB_CONTACT.emailInfo}</a></li>
-                  <li><a href={`mailto:${HB_CONTACT.emailOrder}`} className="text-sm text-white/60 hover:text-white transition-colors">{HB_CONTACT.emailOrder}</a></li>
-                </ul>
-              ) : (
-                <ul className="flex flex-col gap-4">
-                  <li><a href={GN_CONTACT.phoneHref} className="text-sm text-white/60 hover:text-white transition-colors">{GN_CONTACT.phone}</a></li>
-                  <li><a href={`mailto:${GN_CONTACT.email}`} className="text-sm text-white/60 hover:text-white transition-colors">{GN_CONTACT.email}</a></li>
-                </ul>
-              )}
+
+              <ul className="flex flex-col gap-4">
+                <li><a href={GN_CONTACT.phoneHref} className="text-sm text-white/60 hover:text-white transition-colors">{GN_CONTACT.phone}</a></li>
+                <li><a href={`mailto:${GN_CONTACT.email}`} className="text-sm text-white/60 hover:text-white transition-colors">{GN_CONTACT.email}</a></li>
+              </ul>
+
             </div>
 
             {/* Brand Col */}
             <div className="col-span-2 md:col-span-4 lg:col-span-3 lg:pl-12 lg:border-l border-white/10">
               <div className="mb-6">
                 <img
-                  src={isHB ? HB_CONTACT.logo : GN_CONTACT.logo}
-                  alt={isHB ? 'Hongige Beer' : 'Głodny Niedźwiedź'}
+                  src={GN_CONTACT.logo}
+                  alt={'Głodny Niedźwiedź'}
                   className="h-10 w-auto"
                 />
               </div>
@@ -138,18 +121,11 @@ export default function FooterSection() {
                 <p className="text-xs font-bold uppercase tracking-widest text-[#ed8788] mb-3">
                   {tFooter('companyDetails')}
                 </p>
-                {isHB ? (
-                  <div className="text-[11px] text-white/40 leading-relaxed flex flex-col gap-1">
-                    <span className="font-semibold text-white/60">{HB_CONTACT.companyName}</span>
-                    <span>{HB_CONTACT.address}</span>
-                    <span className="mt-1">{HB_CONTACT.coc}</span>
-                    <span>{HB_CONTACT.vat}</span>
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-white/40 leading-relaxed text-justify">
-                    {tFooter('companyInfo')}
-                  </p>
-                )}
+
+                <p className="text-[11px] text-white/40 leading-relaxed text-justify">
+                  {tFooter('companyInfo')}
+                </p>
+
               </div>
             </div>
           </div>
@@ -157,7 +133,7 @@ export default function FooterSection() {
           {/* Bottom Row */}
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-white/40 text-center md:text-left">
-              © {new Date().getFullYear()} {isHB ? HB_CONTACT.copyright : GN_CONTACT.copyright}. {tFooter('rights')}.
+              © {new Date().getFullYear()} {GN_CONTACT.copyright}. {tFooter('rights')}.
             </p>
             <div className="flex items-center gap-4 opacity-50">
               {/* Optional space for future icons */}

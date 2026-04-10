@@ -231,7 +231,7 @@ export default function DlaFirmPage() {
           {/* GN Lunch App logo SVG */}
           <div className="w-full md:w-[75%] min-w-[220px] mx-auto md:mx-0 flex justify-center md:justify-start">
             <img
-              src="/images/lunchapp-logo.png"
+              src="/images/gnlunchapp2.svg"
               alt="GN Lunch App"
               className="w-full h-auto"
             />
@@ -366,10 +366,10 @@ export default function DlaFirmPage() {
                       <h3 className="font-heading font-black text-base text-[#1B4332]">{t(`${step}Title`)}</h3>
                     </div>
                     <p className="text-sm text-[#1B4332]/60 leading-relaxed">{t(`${step}Desc`)}</p>
-                    {i === 3 && (
+                    {i === 4 && (
                       <div className="flex items-center gap-1.5 mt-3 flex-wrap">
                         {[
-                          { el: <img src="/images/ideal.svg" alt="iDEAL" className="h-5 w-auto" /> },
+                          { el: <img src="/images/blik.svg" alt="BLIK" className="h-5 w-auto" /> },
                           { el: <Icon icon="logos:apple-pay" height={14} /> },
                           { el: <Icon icon="logos:google-pay" height={14} /> },
                           { el: <Icon icon="logos:visa" height={10} /> },
@@ -387,8 +387,6 @@ export default function DlaFirmPage() {
             </div>
           </div>
 
-          {/* Wyraźniejszy gładki fade-out tła na końcu sekcji */}
-          <div className="pointer-events-none absolute bottom-0 left-0 w-full h-48 sm:h-64 z-20 bg-gradient-to-t from-[#FDF6EC] via-[#FDF6EC]/80 to-transparent" />
         </section>
       </div>
 

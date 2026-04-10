@@ -6,17 +6,6 @@ import { getSiteConfig } from '../config/sites';
 
 export const ONLINE_DISCOUNT = getSiteConfig().onlineDiscount;
 
-/**
- * Package-level metadata set by the migrant ordering flow.
- * Stores actual Trunkrs delivery event dates (not eating days).
- */
-export interface PackageMeta {
-  /** ISO strings of the physical Trunkrs delivery event Date objects */
-  deliveryEventDates: string[];
-  /** Package size: 3 or 6 eating days */
-  eatingDays: number;
-}
-
 export interface CartItem {
   id: string;
   name: string;
@@ -30,9 +19,6 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
-  /** Set by migrant flow — stores actual Trunkrs delivery event dates */
-  packageMeta: PackageMeta | null;
-  setPackageMeta: (meta: PackageMeta | null) => void;
   addItem: (item: Omit<CartItem, 'quantity' | 'price'>) => void;
   removeItem: (id: string, date: string) => void;
   updateQuantity: (id: string, date: string, quantity: number) => void;
@@ -55,9 +41,6 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
-      packageMeta: null,
-
-      setPackageMeta: (meta) => set({ packageMeta: meta }),
 
       addItem: (newItem) => {
         const discountedPrice = parseFloat(
@@ -100,7 +83,7 @@ export const useCartStore = create<CartState>()(
         }));
       },
 
-      clearCart: () => set({ items: [], packageMeta: null }),
+      clearCart: () => set({ items: [] }),
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),

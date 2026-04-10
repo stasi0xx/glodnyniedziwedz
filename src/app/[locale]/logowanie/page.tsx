@@ -77,7 +77,7 @@ function LoginForm() {
     <div className="min-h-screen bg-[#FDF6EC] flex flex-col items-center justify-center px-4 py-12">
       {/* Brand */}
       <div className="mb-8 flex flex-col items-center">
-        <Image src="/images/hb-logo.png" alt="Głodny Niedźwiedź" width={180} height={80} priority />
+        <Image src="/images/gnlunchapp2.svg" alt="Głodny Niedźwiedź" width={180} height={80} priority />
       </div>
 
       {/* Card */}

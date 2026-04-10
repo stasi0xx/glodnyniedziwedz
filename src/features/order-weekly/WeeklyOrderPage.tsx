@@ -153,9 +153,10 @@ export default function WeeklyOrderPage() {
         <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 md:px-8 relative z-10">
           <div className="sticky top-16 z-20 bg-[#FDF6EC] pt-3 md:pt-4 lg:pt-5 pb-2 md:pb-3 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 shadow-sm">
             <MenuDayTabs
-              dates={availableDates}
+              dates={MENU_DATES}
               selectedDate={selectedDate ?? ''}
               onSelectDate={setSelectedDate}
+              availableDates={availableDates}
             />
             {categories.length > 0 && (
               <div className="flex gap-2 mt-2 w-max mx-auto max-w-full overflow-x-auto scrollbar-hide px-1 pb-1">

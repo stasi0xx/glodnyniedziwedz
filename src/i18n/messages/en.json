@@ -152,7 +152,11 @@
     "orderNumber": "Order Number",
     "backToMenu": "Back to Menu",
     "deliveryInfo": "Delivery window: 08:00–10:00",
-    "cashInfo": "Pay cash on delivery"
+    "cashInfo": "Pay cash on delivery",
+    "emailConfirmation": "A confirmation has been sent to your email",
+    "createAccountTitle": "Create an account in 30 seconds",
+    "createAccountDesc": "Track your order, manage addresses and earn loyalty points for every lunch.",
+    "createAccountCta": "Create account →"
   },
   "days": {
     "Mon": "Mon",

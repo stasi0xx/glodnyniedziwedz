@@ -11,6 +11,5 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   project: "javascript-nextjs",
   authToken: process.env.SENTRY_AUTH_TOKEN,
   widenClientFileUpload: true,
-  tunnelRoute: "/monitoring",
   silent: !process.env.CI,
 });

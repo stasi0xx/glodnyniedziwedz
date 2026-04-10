@@ -49,7 +49,12 @@
     "submitting": "Wysyłanie...",
     "successTitle": "Gotowe!",
     "successDesc": "Oddzwonimy do Ciebie w ciągu 24h roboczych. Do usłyszenia!",
-    "errorMsg": "Coś poszło nie tak. Zadzwoń do nas: +48 732 999 072"
+    "errorMsg": "Coś poszło nie tak. Zadzwoń do nas: +48 732 999 072",
+    "backLink": "Strona główna",
+    "howItWorksEyebrow": "Jak to działa",
+    "howItWorksHeading": "5 kroków do lepszych lunchów w biurze.",
+    "callDirectly": "Lub zadzwoń bezpośrednio:",
+    "directPhone": "+48 732 999 072"
   },
   "menu": {
     "weeklyMenu": "Tygodniowe menu",
@@ -65,6 +70,8 @@
     "addToCart": "Dodaj",
     "added": "Dodano",
     "inCart": "W koszyku",
+    "discountBadge": "Rabat -5%",
+    "regularPrice": "Zwykła cena",
     "nextDeliveryMenu": "Najbliższa dostawa: {date}",
     "freeDelivery": "Darmowa dostawa"
   },
@@ -136,7 +143,11 @@
     "orderNumber": "Numer zamówienia",
     "backToMenu": "Wróć do menu",
     "deliveryInfo": "Dostawa w godz. 08:00–10:00",
-    "cashInfo": "Płatność gotówką przy dostawie"
+    "cashInfo": "Płatność gotówką przy dostawie",
+    "emailConfirmation": "Potwierdzenie zostało wysłane na Twój email",
+    "createAccountTitle": "Załóż konto w 30 sekund",
+    "createAccountDesc": "Śledź zamówienie, zarządzaj adresami i zbieraj punkty lojalnościowe za każdy lunch.",
+    "createAccountCta": "Utwórz konto →"
   },
   "days": {
     "Mon": "Pon",
