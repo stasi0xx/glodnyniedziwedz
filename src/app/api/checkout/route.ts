@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
-import { createAuthServerClient, createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase';
 import { sendOrderEmails } from '@/lib/resend';
 import { getSiteConfig, toStripeLocale } from '@/config/sites';
 
@@ -36,25 +36,24 @@ export async function POST(req: NextRequest) {
       paymentMethod,
       deliveryDates,
       locale,
+      userId,
     }: {
       items: OrderItem[];
       customer: CustomerData;
       paymentMethod: 'stripe' | 'cash';
       deliveryDates: string[];
       locale: string;
+      userId: string | null;
     } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'No items in cart' }, { status: 400 });
     }
 
+    console.log('[checkout] userId from client:', userId);
+
     const itemsTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const supabase = createServerSupabaseClient();
-
-    // Attach order to logged-in user if available
-    const authClient = await createAuthServerClient();
-    const { data: { user: loggedInUser } } = await authClient.auth.getUser();
-    const userId = loggedInUser?.id ?? null;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     const site = getSiteConfig();

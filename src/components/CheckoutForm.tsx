@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useCartStore } from '@/store/cart';
 import { parseMenuDate } from '@/lib/utils';
 import { getSiteConfig } from '@/config/sites';
+import { getSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 interface FormData {
   firstName: string;
@@ -141,10 +142,14 @@ export default function CheckoutForm() {
           : '';
       const combinedNotes = [form.notes.trim(), vatSuffix].filter(Boolean).join('\n');
 
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          userId: user?.id ?? null,
           items: items.map((item) => ({
             id: item.id,
             name: item.name,
