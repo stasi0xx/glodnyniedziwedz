@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createAuthServerClient, createServerSupabaseClient } from '@/lib/supabase';
 import { sendOrderEmails } from '@/lib/resend';
 import { getSiteConfig, toStripeLocale } from '@/config/sites';
 
@@ -50,6 +50,11 @@ export async function POST(req: NextRequest) {
 
     const itemsTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const supabase = createServerSupabaseClient();
+
+    // Attach order to logged-in user if available
+    const authClient = await createAuthServerClient();
+    const { data: { user: loggedInUser } } = await authClient.auth.getUser();
+    const userId = loggedInUser?.id ?? null;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     const site = getSiteConfig();
@@ -93,6 +98,7 @@ export async function POST(req: NextRequest) {
       const { data: order, error } = await supabase
         .from('orders')
         .insert({
+          user_id: userId,
           customer_first_name: customer.firstName,
           customer_last_name: customer.lastName,
           customer_email: customer.email,
@@ -152,6 +158,7 @@ export async function POST(req: NextRequest) {
       const { data: order, error } = await supabase
         .from('orders')
         .insert({
+          user_id: userId,
           customer_first_name: customer.firstName,
           customer_last_name: customer.lastName,
           customer_email: customer.email,
