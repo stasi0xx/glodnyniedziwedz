@@ -1,7 +1,7 @@
 export type SiteId =
   | 'glodny-niedzwiedz';
 
-export type Currency = 'PLN';
+export type Currency = 'PLN' | 'EUR';
 export type OrderingFlow = 'weekly';
 export type PaymentMethod = 'card' | 'blik' | 'p24';
 
