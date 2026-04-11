@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
+    console.log(order.customer_email);
     // Update order status
     const { error: updateError } = await supabase
       .from('orders')
@@ -61,6 +62,14 @@ export async function POST(req: NextRequest) {
     if (updateError) {
       console.error('Failed to update order:', updateError);
       return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+    }
+
+    // Link order to user account if email matches
+    if (order.customer_email) {
+      await supabase.rpc('link_order_by_email', {
+        p_order_id: order.id,
+        p_email: order.customer_email,
+      });
     }
 
     // Send confirmation emails

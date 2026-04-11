@@ -75,7 +75,7 @@ const SITES: Record<SiteId, SiteConfig> = {
     siteDescription: 'Zamów pyszne jedzenie z dostawą do biura. Tygodniowe menu, dostawa 8:00–10:00.',
     favicon: '/favicon.ico',
     checkout: {
-      cities: ['Warszawa', 'Kraków', 'Wrocław', 'Poznań', 'Gdańsk', 'Łódź', 'Katowice'],
+      cities: ['Warszawa', 'Kraków', 'Wrocław', 'Poznań', 'Gdańsk', 'Łódź', 'Katowice', 'Gdynia'],
       phonePlaceholder: '+48 500 123 456',
       streetPlaceholder: 'ul. Marszałkowska 1/10',
       vatField: 'nip-pl',

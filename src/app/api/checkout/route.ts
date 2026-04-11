@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No items in cart' }, { status: 400 });
     }
 
-    console.log('[checkout] userId from client:', userId);
 
     const itemsTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const supabase = createServerSupabaseClient();
