@@ -33,7 +33,7 @@ export default function CheckoutForm() {
   const t = useTranslations('checkout');
   const tCart = useTranslations('cart');
   const locale = useLocale();
-  const { items, total, clearCart, deliveryCost, grandTotal } = useCartStore();
+  const { items, total, deliveryCost, grandTotal } = useCartStore();
 
   const [form, setForm] = useState<FormData>({
     firstName: '',
@@ -182,7 +182,6 @@ export default function CheckoutForm() {
       }
 
       if (data.url) {
-        clearCart();
         window.location.href = data.url;
       }
     } catch (err) {
