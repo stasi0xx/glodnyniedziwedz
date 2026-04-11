@@ -66,11 +66,15 @@ export async function POST(req: NextRequest) {
 
     // Link order to user account if email matches
     if (order.customer_email) {
-      await supabase.rpc('link_order_by_email', {
+      const { error: linkError } = await supabase.rpc('link_order_by_email', {
         p_order_id: order.id,
         p_email: order.customer_email,
       });
+      if (linkError) {
+        console.error('link_order_by_email failed:', linkError);
+      }
     }
+
 
     // Send confirmation emails
     console.log('Sending emails for order:', order.id, 'to:', order.customer_email);
