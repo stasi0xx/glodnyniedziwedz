@@ -31,17 +31,7 @@ function formatPrice(amount: number): string {
   return amount.toFixed(2).replace('.', ',') + ' zł';
 }
 
-const bearSvg = `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="14" cy="14" r="9" fill="#E8967A"/>
-  <circle cx="50" cy="14" r="9" fill="#E8967A"/>
-  <circle cx="14" cy="14" r="5" fill="#c47560"/>
-  <circle cx="50" cy="14" r="5" fill="#c47560"/>
-  <circle cx="32" cy="34" r="22" fill="#E8967A"/>
-  <ellipse cx="32" cy="42" rx="9" ry="6" fill="#c47560"/>
-  <circle cx="24" cy="30" r="3" fill="#1C3D1C"/>
-  <circle cx="40" cy="30" r="3" fill="#1C3D1C"/>
-  <ellipse cx="32" cy="39" rx="3" ry="2" fill="#1C3D1C"/>
-</svg>`;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://glodnyniedzwiedz.pl';
 
 export function buildCustomerEmailHtml(data: OrderEmailData): string {
   const itemRows = data.items
@@ -51,7 +41,7 @@ export function buildCustomerEmailHtml(data: OrderEmailData): string {
           <td style="padding:10px 14px;border-bottom:1px solid #f0e8da;color:#1C3D1C;font-size:14px;">${item.name}</td>
           <td style="padding:10px 14px;border-bottom:1px solid #f0e8da;text-align:center;color:#555;font-size:13px;">${item.date}</td>
           <td style="padding:10px 14px;border-bottom:1px solid #f0e8da;text-align:center;color:#555;font-size:13px;">×${item.quantity}</td>
-          <td style="padding:10px 14px;border-bottom:1px solid #f0e8da;text-align:right;color:#E8967A;font-weight:bold;font-size:14px;">${formatPrice(item.price * item.quantity)}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #f0e8da;text-align:right;color:#ec8998;font-weight:bold;font-size:14px;">${formatPrice(item.price * item.quantity)}</td>
         </tr>`
     )
     .join('');
@@ -64,15 +54,12 @@ export function buildCustomerEmailHtml(data: OrderEmailData): string {
 
     <!-- Header -->
     <div style="background:#1C3D1C;border-radius:20px 20px 0 0;padding:36px 32px;text-align:center;">
-      <div style="display:inline-block;background:#E8967A;border-radius:50%;width:72px;height:72px;line-height:72px;text-align:center;margin-bottom:16px;">
-        ${bearSvg}
-      </div>
-      <div style="font-size:36px;font-weight:900;color:#FDF6EC;letter-spacing:4px;line-height:1;">GN</div>
-      <div style="font-size:11px;font-weight:700;color:#E8967A;letter-spacing:4px;margin-top:6px;text-transform:uppercase;">Głodny Niedźwiedź · Est. 2018 Catering</div>
+      <img src="${baseUrl}/images/logo.webp" alt="Głodny Niedźwiedź" width="120" style="display:block;margin:0 auto 8px;border:0;" />
+      <div style="font-size:11px;font-weight:700;color:#ec8998;letter-spacing:4px;margin-top:6px;text-transform:uppercase;">Głodny Niedźwiedź · Est. 2018 Catering</div>
     </div>
 
     <!-- Hero band -->
-    <div style="background:#E8967A;padding:20px 32px;text-align:center;">
+    <div style="background:#ec8998;padding:20px 32px;text-align:center;">
       <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:1px;">ZAMÓWIENIE PRZYJĘTE!</div>
       <div style="font-size:13px;color:#fff;opacity:0.9;margin-top:4px;">The best office catering.</div>
     </div>
@@ -92,7 +79,7 @@ export function buildCustomerEmailHtml(data: OrderEmailData): string {
 
       <!-- Delivery info -->
       <div style="border:2px solid #f0e8da;border-radius:12px;padding:20px;margin-bottom:24px;">
-        <div style="font-size:11px;font-weight:700;color:#E8967A;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">Dostawa</div>
+        <div style="font-size:11px;font-weight:700;color:#ec8998;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;">Dostawa</div>
         <table style="width:100%;border-collapse:collapse;">
           <tr>
             <td style="padding:3px 0;font-size:13px;color:#888;width:120px;">Firma</td>
@@ -114,7 +101,7 @@ export function buildCustomerEmailHtml(data: OrderEmailData): string {
       </div>
 
       <!-- Items -->
-      <div style="font-size:11px;font-weight:700;color:#E8967A;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">Zamówione pozycje</div>
+      <div style="font-size:11px;font-weight:700;color:#ec8998;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">Zamówione pozycje</div>
       <table style="width:100%;border-collapse:collapse;margin-bottom:0;">
         <thead>
           <tr style="background:#FDF6EC;">
@@ -128,7 +115,7 @@ export function buildCustomerEmailHtml(data: OrderEmailData): string {
         <tfoot>
           <tr style="background:#1C3D1C;border-radius:0 0 8px 8px;">
             <td colspan="3" style="padding:14px;text-align:right;font-weight:900;color:#FDF6EC;font-size:13px;letter-spacing:1px;text-transform:uppercase;">Razem:</td>
-            <td style="padding:14px;text-align:right;font-weight:900;color:#E8967A;font-size:20px;">${formatPrice(data.totalAmount)}</td>
+            <td style="padding:14px;text-align:right;font-weight:900;color:#ec8998;font-size:20px;">${formatPrice(data.totalAmount)}</td>
           </tr>
         </tfoot>
       </table>
@@ -162,7 +149,7 @@ export function buildRestaurantEmailHtml(data: OrderEmailData): string {
           <td style="padding:8px 12px;border-bottom:1px solid #f0e8da;color:#555;font-size:13px;">${item.category}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #f0e8da;text-align:center;color:#555;font-size:13px;">${item.date}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #f0e8da;text-align:center;color:#555;font-size:13px;">×${item.quantity}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #f0e8da;text-align:right;color:#E8967A;font-weight:bold;font-size:13px;">${formatPrice(item.price * item.quantity)}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #f0e8da;text-align:right;color:#ec8998;font-weight:bold;font-size:13px;">${formatPrice(item.price * item.quantity)}</td>
         </tr>`
     )
     .join('');
@@ -177,10 +164,10 @@ export function buildRestaurantEmailHtml(data: OrderEmailData): string {
     <div style="background:#1C3D1C;border-radius:16px 16px 0 0;padding:24px 32px;display:flex;align-items:center;justify-content:space-between;">
       <div>
         <div style="font-size:28px;font-weight:900;color:#FDF6EC;letter-spacing:4px;line-height:1;">GN</div>
-        <div style="font-size:10px;font-weight:700;color:#E8967A;letter-spacing:3px;margin-top:4px;text-transform:uppercase;">Admin · Nowe zamówienie</div>
+        <div style="font-size:10px;font-weight:700;color:#ec8998;letter-spacing:3px;margin-top:4px;text-transform:uppercase;">Admin · Nowe zamówienie</div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:22px;font-weight:900;color:#E8967A;letter-spacing:2px;">#${data.orderId.slice(0, 8).toUpperCase()}</div>
+        <div style="font-size:22px;font-weight:900;color:#ec8998;letter-spacing:2px;">#${data.orderId.slice(0, 8).toUpperCase()}</div>
         <div style="font-size:12px;color:#fff;opacity:0.7;margin-top:2px;">${data.paymentMethod === 'stripe' ? 'Karta / online' : 'Gotówka'} · ${formatPrice(data.totalAmount)}</div>
       </div>
     </div>
@@ -189,7 +176,7 @@ export function buildRestaurantEmailHtml(data: OrderEmailData): string {
     <div style="background:#fff;padding:28px 32px;border-radius:0 0 16px 16px;box-shadow:0 4px 20px rgba(28,61,28,0.10);">
 
       <!-- Customer -->
-      <div style="font-size:11px;font-weight:700;color:#E8967A;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">Dane klienta</div>
+      <div style="font-size:11px;font-weight:700;color:#ec8998;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">Dane klienta</div>
       <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
         <tr>
           <td style="padding:4px 0;font-size:13px;color:#888;width:130px;">Imię i nazwisko</td>
@@ -215,11 +202,11 @@ export function buildRestaurantEmailHtml(data: OrderEmailData): string {
           <td style="padding:4px 0;font-size:13px;color:#888;">Dni dostawy</td>
           <td style="padding:4px 0;font-size:13px;color:#1C3D1C;font-weight:700;">${data.deliveryDates.join(' · ')}</td>
         </tr>
-        ${data.notes ? `<tr><td style="padding:4px 0;font-size:13px;color:#888;">Uwagi</td><td style="padding:4px 0;font-size:13px;color:#E8967A;font-style:italic;">${data.notes}</td></tr>` : ''}
+        ${data.notes ? `<tr><td style="padding:4px 0;font-size:13px;color:#888;">Uwagi</td><td style="padding:4px 0;font-size:13px;color:#ec8998;font-style:italic;">${data.notes}</td></tr>` : ''}
       </table>
 
       <!-- Items -->
-      <div style="font-size:11px;font-weight:700;color:#E8967A;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">Pozycje zamówienia</div>
+      <div style="font-size:11px;font-weight:700;color:#ec8998;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">Pozycje zamówienia</div>
       <table style="width:100%;border-collapse:collapse;">
         <thead>
           <tr style="background:#FDF6EC;">
@@ -234,7 +221,7 @@ export function buildRestaurantEmailHtml(data: OrderEmailData): string {
         <tfoot>
           <tr style="background:#1C3D1C;">
             <td colspan="4" style="padding:12px;text-align:right;font-weight:900;color:#FDF6EC;font-size:13px;letter-spacing:1px;text-transform:uppercase;">Razem:</td>
-            <td style="padding:12px;text-align:right;font-weight:900;color:#E8967A;font-size:18px;">${formatPrice(data.totalAmount)}</td>
+            <td style="padding:12px;text-align:right;font-weight:900;color:#ec8998;font-size:18px;">${formatPrice(data.totalAmount)}</td>
           </tr>
         </tfoot>
       </table>

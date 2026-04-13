@@ -44,24 +44,23 @@ function formatDateFull(dateStr: string, dayNames: string[], months: string[]) {
   };
 }
 
-// Returns Mon-Fri of the current week; if today is Sat/Sun returns next week instead
-function getCurrentWeekDays(nowIso: string): string[] {
-  const [y, m, d] = nowIso.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const dow = date.getDay(); // 0=Sun … 6=Sat
+// Returns all days of the current month as DD.MM.YYYY strings,
+// plus leading nulls so the grid starts on Monday
+function getCurrentMonthDays(nowIso: string): (string | null)[] {
+  const [y, m] = nowIso.split('-').map(Number);
+  const daysInMonth = new Date(y, m, 0).getDate();
 
-  const monday = new Date(date);
-  if (dow === 0) monday.setDate(date.getDate() + 1);       // Sun → next Mon
-  else if (dow === 6) monday.setDate(date.getDate() + 2);  // Sat → next Mon
-  else monday.setDate(date.getDate() - (dow - 1));         // weekday → this Mon
+  // Day-of-week of the 1st (0=Sun…6=Sat) → offset so Mon=0
+  const firstDow = new Date(y, m - 1, 1).getDay();
+  const offset = firstDow === 0 ? 6 : firstDow - 1; // Mon-based
 
-  return Array.from({ length: 5 }, (_, i) => {
-    const cur = new Date(monday);
-    cur.setDate(monday.getDate() + i);
-    const dd = String(cur.getDate()).padStart(2, '0');
-    const mm = String(cur.getMonth() + 1).padStart(2, '0');
-    return `${dd}.${mm}.${cur.getFullYear()}`;
+  const leading: null[] = Array(offset).fill(null);
+  const days = Array.from({ length: daysInMonth }, (_, i) => {
+    const dd = String(i + 1).padStart(2, '0');
+    const mm = String(m).padStart(2, '0');
+    return `${dd}.${mm}.${y}`;
   });
+  return [...leading, ...days];
 }
 
 // Convert YYYY-MM-DD → DD.MM.YYYY
@@ -89,14 +88,14 @@ function CalendarGrid({
   deliveryDates,
   todayDDMMYYYY,
   dayHeaders,
-  thisWeekLabel,
+  thisMonthLabel,
   labels,
 }: {
-  workingDays: string[];
+  workingDays: (string | null)[];
   deliveryDates: Set<string>;
   todayDDMMYYYY: string;
   dayHeaders: string[];
-  thisWeekLabel: string;
+  thisMonthLabel: string;
   labels: { delivery: string; edit: string; order: string };
 }) {
   const [td, tm, ty] = todayDDMMYYYY.split('.').map(Number);
@@ -108,17 +107,23 @@ function CalendarGrid({
     return new Date(y, m - 1, d) < new Date(ty, tm - 1, td);
   }
 
+  const isWeekend = (dayStr: string) => {
+    const [d, m, y] = dayStr.split('.').map(Number);
+    const dow = new Date(y, m - 1, d).getDay();
+    return dow === 0 || dow === 6;
+  };
+
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center gap-2">
         <CalendarDays className="h-3.5 w-3.5 text-[#1C3D1C]/40" />
         <p className="text-[11px] font-bold uppercase tracking-widest text-[#1C3D1C]/40">
-          {thisWeekLabel}
+          {thisMonthLabel}
         </p>
       </div>
 
       {/* Header */}
-      <div className="mb-1 grid grid-cols-5 gap-1">
+      <div className="mb-1 grid grid-cols-7 gap-0.5">
         {dayHeaders.map((h) => (
           <div key={h} className="py-0.5 text-center text-[10px] font-bold uppercase tracking-wide text-[#1C3D1C]/30">
             {h}
@@ -127,42 +132,41 @@ function CalendarGrid({
       </div>
 
       {/* Days */}
-      <div className="grid grid-cols-5 gap-1">
-        {workingDays.map((day) => {
+      <div className="grid grid-cols-7 gap-0.5">
+        {workingDays.map((day, idx) => {
+          if (!day) return <div key={`empty-${idx}`} />;
+
           const isToday = day === todayDDMMYYYY;
           const isTomorrow = day === tomorrowDDMMYYYY;
           const hasOrder = deliveryDates.has(day);
           const past = !isToday && isPast(day);
           const isFuture = !isToday && !past;
+          const weekend = isWeekend(day);
           const dayNum = parseInt(day.slice(0, 2), 10);
+
           return (
             <div
               key={day}
-              className={`flex flex-col items-center rounded-lg py-2 text-xs font-semibold transition ${isToday
-                ? 'bg-[#1C3D1C] text-white'
-                : hasOrder
-                  ? 'bg-[#E8967A]/10 text-[#1C3D1C]'
-                  : past
-                    ? 'text-[#1C3D1C]/20'
-                    : 'text-[#1C3D1C]/55'
-                }`}
+              className={`flex flex-col items-center rounded-md py-1.5 text-[11px] font-semibold transition ${
+                isToday
+                  ? 'bg-[#1C3D1C] text-white'
+                  : hasOrder
+                    ? 'bg-[#E8967A]/10 text-[#1C3D1C]'
+                    : past || weekend
+                      ? 'text-[#1C3D1C]/20'
+                      : 'text-[#1C3D1C]/55'
+              }`}
             >
               <span>{dayNum}</span>
-              {isTomorrow && hasOrder ? (
-                <span className="mt-1.5 rounded-full bg-[#E8967A] px-2 py-1 text-[9px] font-bold leading-none text-white">
-                  {labels.delivery}
-                </span>
+              {!weekend && (isTomorrow && hasOrder ? (
+                <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-[#E8967A]" />
               ) : isFuture && hasOrder ? (
-                <span className="mt-1.5 rounded-full bg-[#E8967A] px-2 py-1 text-[9px] font-bold leading-none text-white">
-                  {labels.edit}
-                </span>
+                <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-[#E8967A]" />
               ) : isFuture && !hasOrder ? (
-                <span className="mt-1.5 rounded-full bg-[#E8967A]/20 px-2 py-1 text-[9px] font-bold leading-none text-[#E8967A]">
-                  {labels.order}
-                </span>
+                <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-[#1C3D1C]/10" />
               ) : (
-                <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-transparent" />
-              )}
+                <span className="mt-1 block h-1.5 w-1.5" />
+              ))}
             </div>
           );
         })}
@@ -222,8 +226,8 @@ export default async function KontoDashboardPage({
 
   const nextDateFmt = nextDeliveryDate ? formatDateFull(nextDeliveryDate, dayNames, months) : null;
 
-  // Calendar — current week Mon-Fri (or next week if weekend)
-  const workingDays = getCurrentWeekDays(nowIso);
+  // Calendar — all days of the current month
+  const workingDays = getCurrentMonthDays(nowIso);
   const allDeliveryDates = new Set(
     upcomingOrders.flatMap((o: Order) => o.delivery_dates ?? [])
   );
@@ -265,13 +269,12 @@ export default async function KontoDashboardPage({
             {nextItems.length > 0 && (
               <div className="mt-4 px-5">
                 <div
-                  className={`overflow-hidden rounded-xl ${nextItems.length === 1
+                  className={`aspect-[3/2] overflow-hidden rounded-xl ${nextItems.length === 1
                     ? 'grid grid-cols-1'
                     : nextItems.length === 2
                       ? 'grid grid-cols-2 gap-0.5'
                       : 'grid grid-cols-3 gap-0.5'
                     }`}
-                  style={{ minHeight: '200px' }}
                 >
                   {nextItems.slice(0, 3).map((item, i) => (
                     <MealCard
@@ -356,7 +359,7 @@ export default async function KontoDashboardPage({
           deliveryDates={allDeliveryDates}
           todayDDMMYYYY={todayDDMMYYYY}
           dayHeaders={dayHeaders}
-          thisWeekLabel={t('thisWeek')}
+          thisMonthLabel={t('thisMonth')}
           labels={calendarLabels}
         />
 

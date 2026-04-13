@@ -225,7 +225,7 @@
     "freshSub": "Zero preservatives",
     "delivery": "200+ offices",
     "deliverySub": "In Warsaw",
-    "rating": "4.9 / 5",
+    "rating": "4.6 / 5",
     "ratingSub": "Customer rating"
   },
   "howItWorks": {
@@ -440,7 +440,7 @@
         "points": "Points",
         "loyaltyPoints": "loyalty points",
         "pointsGoal": "500 pts = free meal",
-        "thisWeek": "This week",
+        "thisMonth": "This month",
         "orderNext": "Order for the next day",
         "orderNextSub": "Browse the current weekly menu",
         "checkMenu": "Check menu",
@@ -449,7 +449,7 @@
           "edit": "edit",
           "order": "order"
         },
-        "weekDayHeaders": "Mon,Tue,Wed,Thu,Fri",
+        "weekDayHeaders": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
         "dayNames": "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday",
         "months": "January,February,March,April,May,June,July,August,September,October,November,December"
       },

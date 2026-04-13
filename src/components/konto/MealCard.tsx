@@ -92,7 +92,7 @@ export function MealCard({ name, image, quantity, count }: MealCardProps) {
       onClick={handleClick}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image} alt={name} className="h-full w-full object-cover" />
+      <img src={image} alt={name} className="h-full w-full object-cover object-center" />
 
       {/* Default: gradient + name at bottom */}
       <div

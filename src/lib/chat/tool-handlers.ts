@@ -1,30 +1,40 @@
-import menuData from '@/data/menu.json';
 import { checkDelivery } from './delivery-zones';
 import type { MenuData } from './types';
 
-const menu = menuData as MenuData;
+const DAY_NAMES_PL = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'];
+const DAY_NAMES_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function parseMenuDate(dateStr: string): Date {
   const [day, month, year] = dateStr.split('.').map(Number);
   return new Date(year, month - 1, day);
 }
 
-function getAvailableDates(): string[] {
+function dateWithDay(dateStr: string, lang: 'pl' | 'en' = 'pl'): string {
+  const date = parseMenuDate(dateStr);
+  const dayName = lang === 'pl' ? DAY_NAMES_PL[date.getDay()] : DAY_NAMES_EN[date.getDay()];
+  return `${dateStr} (${dayName})`;
+}
+
+export function getMenuDatesSummary(menu: MenuData, lang: 'pl' | 'en' = 'pl'): string {
+  return Object.keys(menu).map((d) => dateWithDay(d, lang)).join(', ');
+}
+
+function getAvailableDates(menu: MenuData): string[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const allDates = Object.keys(menu);
   const upcoming = allDates.filter((d) => parseMenuDate(d) >= today);
 
-  // If no upcoming dates, fall back to all available dates
   return upcoming.length > 0 ? upcoming : allDates;
 }
 
-function formatMenuForClaude(dates: string[], categoryFilter?: string): string {
+function formatMenuForChat(menu: MenuData, dates: string[], categoryFilter?: string): string {
   const lines: string[] = [];
 
   for (const date of dates) {
     const dayMenu = menu[date];
+    if (!dayMenu) continue;
     const dayLines: string[] = [];
 
     for (const [category, dishes] of Object.entries(dayMenu)) {
@@ -37,7 +47,7 @@ function formatMenuForClaude(dates: string[], categoryFilter?: string): string {
     }
 
     if (dayLines.length > 0) {
-      lines.push(`${date}:`);
+      lines.push(`${dateWithDay(date)}:`);
       lines.push(...dayLines);
       lines.push('');
     }
@@ -46,7 +56,12 @@ function formatMenuForClaude(dates: string[], categoryFilter?: string): string {
   return lines.join('\n').trim();
 }
 
-function handleSearchMenu(preferences: string, category?: string, date?: string): string {
+function handleSearchMenu(
+  menu: MenuData,
+  preferences: string,
+  category?: string,
+  date?: string,
+): string {
   let datesToSearch: string[];
 
   if (date) {
@@ -55,21 +70,20 @@ function handleSearchMenu(preferences: string, category?: string, date?: string)
       return `Brak menu na datę ${date}. Dostępne daty: ${Object.keys(menu).join(', ')}.`;
     }
   } else {
-    datesToSearch = getAvailableDates();
+    datesToSearch = getAvailableDates(menu);
   }
 
-  const formatted = formatMenuForClaude(datesToSearch, category);
+  const formatted = formatMenuForChat(menu, datesToSearch, category);
 
   if (!formatted) {
     return 'Nie znaleziono dań spełniających podane kryteria.';
   }
 
-  const isUpcoming =
-    datesToSearch.some((d) => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return parseMenuDate(d) >= today;
-    });
+  const isUpcoming = datesToSearch.some((d) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return parseMenuDate(d) >= today;
+  });
 
   const header = isUpcoming
     ? `Dostępne menu (nadchodzące dni, filtr: "${preferences}"):\n\n`
@@ -94,9 +108,13 @@ function handleCheckDelivery(city: string): string {
   );
 }
 
-export function handleToolCall(name: string, input: Record<string, string>): string {
+export function handleToolCall(
+  name: string,
+  input: Record<string, string>,
+  menu: MenuData,
+): string {
   if (name === 'search_menu') {
-    return handleSearchMenu(input.preferences, input.category, input.date);
+    return handleSearchMenu(menu, input.preferences, input.category, input.date);
   }
   if (name === 'check_delivery') {
     return handleCheckDelivery(input.city);

@@ -102,18 +102,8 @@ export default function KontoPanelShell({ children, locale, displayName, avatarU
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-64 lg:flex-col lg:bg-[#1C3D1C] lg:shadow-xl">
         {/* Logo */}
         <div className="flex items-center gap-3 border-b border-white/10 px-6 py-5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8967A] flex-shrink-0">
-            <svg viewBox="0 0 64 64" fill="none" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="14" cy="14" r="9" fill="white" opacity="0.9" />
-              <circle cx="50" cy="14" r="9" fill="white" opacity="0.9" />
-              <circle cx="14" cy="14" r="5" fill="#c47560" />
-              <circle cx="50" cy="14" r="5" fill="#c47560" />
-              <circle cx="32" cy="34" r="22" fill="white" opacity="0.95" />
-              <ellipse cx="32" cy="42" rx="9" ry="6" fill="#c47560" />
-              <circle cx="24" cy="30" r="3" fill="#1C3D1C" />
-              <circle cx="40" cy="30" r="3" fill="#1C3D1C" />
-              <ellipse cx="32" cy="39" rx="3" ry="2" fill="#1C3D1C" />
-            </svg>
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full overflow-hidden">
+            <img src="/images/logo.webp" alt="Głodny Niedźwiedź" className="h-full w-full object-cover" />
           </div>
           <div>
             <p className="font-heading text-sm text-white leading-none">Głodny Niedźwiedź</p>
@@ -175,18 +165,8 @@ export default function KontoPanelShell({ children, locale, displayName, avatarU
       {/* ─── MOBILE TOP BAR ──────────────────────────────────────── */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#1C3D1C]/10 bg-white/90 px-4 py-3 backdrop-blur-sm lg:hidden">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8967A]">
-            <svg viewBox="0 0 64 64" fill="none" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="14" cy="14" r="9" fill="white" opacity="0.9" />
-              <circle cx="50" cy="14" r="9" fill="white" opacity="0.9" />
-              <circle cx="14" cy="14" r="5" fill="#c47560" />
-              <circle cx="50" cy="14" r="5" fill="#c47560" />
-              <circle cx="32" cy="34" r="22" fill="white" opacity="0.95" />
-              <ellipse cx="32" cy="42" rx="9" ry="6" fill="#c47560" />
-              <circle cx="24" cy="30" r="3" fill="#1C3D1C" />
-              <circle cx="40" cy="30" r="3" fill="#1C3D1C" />
-              <ellipse cx="32" cy="39" rx="3" ry="2" fill="#1C3D1C" />
-            </svg>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full overflow-hidden">
+            <img src="/images/logo.webp" alt="Głodny Niedźwiedź" className="h-full w-full object-cover" />
           </div>
           <span className="font-heading text-base text-[#1C3D1C]">{t('clientPanel')}</span>
         </div>

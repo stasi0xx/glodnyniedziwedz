@@ -208,7 +208,7 @@
     "tag3": "Dostawa do biura"
   },
   "trust": {
-    "inao": "Certyfikat INAO",
+    "inao": "Lokalne składniki",
     "inaoSub": "Certyfikat jakości",
     "since": "Est. 2018",
     "sinceSub": "Na rynku",
@@ -216,7 +216,7 @@
     "freshSub": "Zero konserwantów",
     "delivery": "200+ biur",
     "deliverySub": "W Warszawie",
-    "rating": "4.9 / 5",
+    "rating": "4.6 / 5",
     "ratingSub": "Ocena klientów"
   },
   "howItWorks": {
@@ -260,7 +260,7 @@
     "q2": "W jakich godzinach jest dostawa?",
     "a2": "Dostarczamy między 8:00 a 10:00, tak żebyś miał jedzenie zanim zacznie się prawdziwy dzień w pracy.",
     "q3": "Co z alergenami?",
-    "a3": "Przy każdym daniu znajdziesz informację o głównych składnikach. W przypadku poważnych alergii skontaktuj się z nami — numer i email znajdziesz na dole strony.",
+    "a3": "Zwróć uwagę, że w naszym zakładzie produkcyjnym stosowane są następujące alergeny: seler, zboża zawierające gluten, skorupiaki, jaja, ryby, łubin, mleko, mięczaki, gorczyca, orzechy, orzeszki ziemne, sezam oraz soja. Ponieważ wszystkie te składniki są używane we wspólnym zakładzie produkcyjnym, istnieje ryzyko, że dowolny z naszych produktów może zawierać śladowe ilości tych alergenów. Choć przy każdym daniu znajdziesz informację o głównych składnikach, nie możemy zagwarantować stuprocentowo wolnego od alergenów środowiska produkcyjnego. W przypadku poważnych alergii skontaktuj się z nami przed złożeniem zamówienia — numer i email znajdziesz na dole strony.",
     "q4": "Czy mogę zamówić dla całego biura?",
     "a4": "Tak! Napisz lub zadzwoń do nas — chętnie omówimy zamówienia grupowe i specjalne warunki dla Twojego biura.",
     "q5": "Jak często zmienia się menu?",
@@ -431,7 +431,7 @@
         "points": "Punkty",
         "loyaltyPoints": "punktów lojalnościowych",
         "pointsGoal": "500 pkt = darmowy posiłek",
-        "thisWeek": "Ten tydzień",
+        "thisMonth": "Ten miesiąc",
         "orderNext": "Zamów na kolejny dzień",
         "orderNextSub": "Przeglądaj aktualne menu tygodniowe",
         "checkMenu": "Sprawdź menu",
@@ -440,7 +440,7 @@
           "edit": "edytuj",
           "order": "zamów"
         },
-        "weekDayHeaders": "Pn,Wt,Śr,Czw,Pt",
+        "weekDayHeaders": "Pn,Wt,Śr,Czw,Pt,Sb,Nd",
         "dayNames": "Niedziela,Poniedziałek,Wtorek,Środa,Czwartek,Piątek,Sobota",
         "months": "stycznia,lutego,marca,kwietnia,maja,czerwca,lipca,sierpnia,września,października,listopada,grudnia"
       },

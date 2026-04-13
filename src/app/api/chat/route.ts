@@ -1,8 +1,10 @@
 import OpenAI from 'openai';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import { tools } from '@/lib/chat/tools';
-import { handleToolCall } from '@/lib/chat/tool-handlers';
+import { handleToolCall, getMenuDatesSummary } from '@/lib/chat/tool-handlers';
+import { fetchPublishedMenu } from '@/lib/menu';
 import type { ChatMessage } from '@/lib/chat/types';
+import type { MenuData } from '@/lib/chat/types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -18,7 +20,15 @@ export async function POST(req: Request) {
     locale: string;
   };
 
-  const systemPrompt = buildSystemPrompt(locale ?? 'pl');
+  const lang = locale ?? 'pl';
+
+  // Fetch menu once — used in system prompt and tool calls
+  const menu: MenuData = (await fetchPublishedMenu()) ?? {};
+  const menuDates = Object.keys(menu).length > 0
+    ? getMenuDatesSummary(menu, lang === 'pl' ? 'pl' : 'en')
+    : (lang === 'pl' ? 'brak opublikowanego menu' : 'no published menu available');
+
+  const systemPrompt = buildSystemPrompt(lang, menuDates);
   const encoder = new TextEncoder();
 
   const readable = new ReadableStream({
@@ -53,7 +63,6 @@ export async function POST(req: Request) {
             break;
           }
 
-          // Execute each tool call
           // Push assistant message first (required by OpenAI for multi-turn tool use)
           currentMessages.push({
             role: 'assistant',
@@ -63,11 +72,14 @@ export async function POST(req: Request) {
 
           for (const toolCall of message.tool_calls) {
             if (toolCall.type !== 'function') continue;
-            const fnCall = toolCall as OpenAI.Chat.ChatCompletionMessageToolCall & { type: 'function'; function: { name: string; arguments: string } };
+            const fnCall = toolCall as OpenAI.Chat.ChatCompletionMessageToolCall & {
+              type: 'function';
+              function: { name: string; arguments: string };
+            };
             let result: string;
             try {
               const input = JSON.parse(fnCall.function.arguments) as Record<string, string>;
-              result = handleToolCall(fnCall.function.name, input);
+              result = handleToolCall(fnCall.function.name, input, menu);
             } catch (toolErr) {
               console.error('[/api/chat] tool execution error:', toolErr);
               result = 'Błąd podczas wykonania narzędzia.';
@@ -87,7 +99,7 @@ export async function POST(req: Request) {
         console.error('[/api/chat] error:', message);
 
         const fallback =
-          locale === 'en'
+          lang === 'en'
             ? 'Sorry, something went wrong. Please try again.'
             : 'Przepraszam, coś poszło nie tak. Spróbuj ponownie.';
         send(fallback);

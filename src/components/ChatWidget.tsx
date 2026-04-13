@@ -93,7 +93,7 @@ export default function ChatWidget() {
         <button
           onClick={() => setIsOpen(true)}
           aria-label={t('open')}
-          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#1B4332] text-white shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8927C]"
+          className="fixed bottom-[76px] right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#1B4332] text-white shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8927C] lg:bottom-6 lg:right-6"
         >
           <MessageCircle size={24} />
           {/* Pulse dot */}
@@ -106,7 +106,7 @@ export default function ChatWidget() {
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex h-[520px] w-[340px] flex-col overflow-hidden rounded-2xl border border-[#1B4332]/10 bg-[#FDF6EC] shadow-2xl md:w-[380px]">
+        <div className="fixed bottom-[76px] right-4 z-50 flex h-[480px] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-[#1B4332]/10 bg-[#FDF6EC] shadow-2xl lg:bottom-6 lg:right-6 lg:h-[520px] lg:w-[380px]">
           {/* Header */}
           <div className="flex items-center justify-between bg-[#1B4332] px-4 py-3 text-white">
             <div className="flex items-center gap-3">

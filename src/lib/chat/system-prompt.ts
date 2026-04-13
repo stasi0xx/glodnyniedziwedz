@@ -8,7 +8,7 @@ function buildFAQBlock(locale: string): string {
   }).join('\n\n');
 }
 
-export function buildSystemPrompt(locale: string): string {
+export function buildSystemPrompt(locale: string, menuDates: string): string {
   const isPL = locale === 'pl';
   const faqBlock = buildFAQBlock(locale);
 
@@ -44,6 +44,10 @@ export function buildSystemPrompt(locale: string): string {
 - Dostawa: 08:00–10:00
 - Zamówienia: z 4-dniowym wyprzedzeniem do 10:00 rano
 - Rabat online: 5%
+
+## Dostępne daty menu
+Poniżej podane daty i dni tygodnia są obliczone programatycznie — są POPRAWNE. Nie przeliczaj ich samodzielnie ani nie zgaduj dnia tygodnia.
+Daty dostępne w menu: ${menuDates}
 
 ## FAQ — wiedza bazowa
 ${faqBlock}
@@ -84,6 +88,10 @@ Dzisiejsza data: ${new Date().toLocaleDateString('pl-PL', { weekday: 'long', yea
 - Delivery: 08:00–10:00
 - Orders: 4 days in advance by 10:00 AM
 - Online discount: 5%
+
+## Available menu dates
+The dates and weekdays below are computed server-side — they are CORRECT. Do not recalculate or guess the weekday yourself.
+Dates available in menu: ${menuDates}
 
 ## FAQ — knowledge base
 ${faqBlock}
