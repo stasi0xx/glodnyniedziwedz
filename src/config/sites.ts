@@ -70,10 +70,10 @@ const SITES: Record<SiteId, SiteConfig> = {
     menuKey: 'full',
     locales: ['pl', 'en'],
     defaultLocale: 'pl',
-    logo: '/logos/gn.svg',
+    logo: '/favicons/hb.png',
     siteTitle: 'Głodny Niedźwiedź – Catering',
     siteDescription: 'Zamów pyszne jedzenie z dostawą do biura. Tygodniowe menu, dostawa 8:00–10:00.',
-    favicon: '/favicon.ico',
+    favicon: '/favicons/hb.png',
     checkout: {
       cities: ['Warszawa', 'Kraków', 'Wrocław', 'Poznań', 'Gdańsk', 'Łódź', 'Katowice', 'Gdynia'],
       phonePlaceholder: '+48 500 123 456',

@@ -20,7 +20,7 @@ const site = getSiteConfig();
 export const metadata: Metadata = {
   title: site.siteTitle,
   description: site.siteDescription,
-  icons: { icon: site.favicon },
+  icons: { icon: '/images/logo.webp' },
   verification: {
     google: 'KkSb97VG_p5Q5o2tGChR7vdLIL8Qf9Ns27GD97c_vRg',
   },
