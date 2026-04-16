@@ -4,6 +4,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useCartStore } from '@/store/cart';
+import gsap from 'gsap';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,6 +16,24 @@ export default function ChatWidget() {
   const t = useTranslations('chat');
   const locale = useLocale();
 
+  const { itemCount } = useCartStore();
+  const [hasMounted, setHasMounted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const cartBarVisible = hasMounted && itemCount() > 0;
+  const baseBottom = 24; // px: bottom-6 on all screen sizes
+  const cartBarHeight = 80; // px: CartBar approximate rendered height
+  const bottomPx = cartBarVisible ? baseBottom + cartBarHeight : baseBottom;
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -21,16 +41,34 @@ export default function ChatWidget() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  // Ustaw stan startowy po zamontowaniu
+  useEffect(() => {
+    if (chatRef.current) gsap.set(chatRef.current, { y: 24, opacity: 0, pointerEvents: 'none' });
+  }, []);
+
+  // Animacja otwarcia / zamknięcia
+  useEffect(() => {
+    if (!chatRef.current || !btnRef.current) return;
+
+    if (isOpen) {
+      gsap.to(btnRef.current, { scale: 0.7, opacity: 0, duration: 0.2, ease: 'power2.in', pointerEvents: 'none' });
+      gsap.fromTo(
+        chatRef.current,
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out', pointerEvents: 'auto', onComplete: () => inputRef.current?.focus() },
+      );
+    } else {
+      gsap.to(chatRef.current, { y: 24, opacity: 0, duration: 0.3, ease: 'power3.in', pointerEvents: 'none' });
+      gsap.to(btnRef.current, { scale: 1, opacity: 1, duration: 0.3, ease: 'power3.out', delay: 0.1, pointerEvents: 'auto' });
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -89,24 +127,27 @@ export default function ChatWidget() {
   return (
     <>
       {/* Floating button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          aria-label={t('open')}
-          className="fixed bottom-[76px] right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#1B4332] text-white shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8927C] lg:bottom-6 lg:right-6"
-        >
-          <MessageCircle size={24} />
-          {/* Pulse dot */}
-          <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E8927C] opacity-75" />
-            <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#E8927C]" />
-          </span>
-        </button>
-      )}
+      <button
+        ref={btnRef}
+        onClick={() => setIsOpen(true)}
+        aria-label={t('open')}
+        style={{ bottom: `${bottomPx}px` }}
+        className="fixed right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#1B4332] text-white shadow-lg transition-[bottom] duration-300 ease-in-out hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8927C] lg:right-6"
+      >
+        <MessageCircle size={24} />
+        {/* Pulse dot */}
+        <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E8927C] opacity-75" />
+          <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#E8927C]" />
+        </span>
+      </button>
 
       {/* Chat window */}
-      {isOpen && (
-        <div className="fixed bottom-[76px] right-4 z-50 flex h-[480px] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-[#1B4332]/10 bg-[#FDF6EC] shadow-2xl lg:bottom-6 lg:right-6 lg:h-[520px] lg:w-[380px]">
+      <div
+        ref={chatRef}
+        style={{ bottom: `${bottomPx}px` }}
+        className="fixed right-4 z-50 flex h-[480px] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-[#1B4332]/10 bg-[#FDF6EC] shadow-2xl transition-[bottom] duration-300 ease-in-out lg:right-6 lg:h-[520px] lg:w-[380px]"
+      >
           {/* Header */}
           <div className="flex items-center justify-between bg-[#1B4332] px-4 py-3 text-white">
             <div className="flex items-center gap-3">
@@ -214,7 +255,6 @@ export default function ChatWidget() {
             </button>
           </div>
         </div>
-      )}
     </>
   );
 }

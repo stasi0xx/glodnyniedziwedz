@@ -14,7 +14,7 @@ export default function MenuDayTabs({ dates, selectedDate, onSelectDate, availab
   const locale = useLocale();
 
   return (
-    <div className="flex justify-start sm:justify-center gap-2 sm:gap-3 lg:gap-5 overflow-x-auto pb-4 pt-1 px-1 scrollbar-hide">
+    <div className="flex justify-center sm:justify-center gap-2 sm:gap-3 lg:gap-5 overflow-x-auto pb-4 pt-1 px-1 scrollbar-hide">
       {dates.map((date) => {
         const d = parseMenuDate(date);
         const available = availableDates ? availableDates.includes(date) : isDateAvailable(date);
@@ -29,7 +29,7 @@ export default function MenuDayTabs({ dates, selectedDate, onSelectDate, availab
             onClick={() => available && onSelectDate(date)}
             disabled={!available}
             className={`flex-shrink-0 flex flex-col items-center justify-center w-14 sm:w-16 md:w-[72px] h-16 sm:h-20 md:h-[84px] rounded-2xl md:rounded-3xl transition-all ${isSelected
-              ? 'bg-[#1C3D1C] text-white shadow-[0_8px_30px_rgba(28,61,28,0.2)] md:shadow-[0_10px_10px_rgba(28,61,28,0.25)] scale-105'
+              ? 'bg-[#1C3D1C] text-white shadow-[0_6px_6px_rgba(28,61,28,0.2)] md:shadow-[0_8px_8px_rgba(28,61,28,0.25)] scale-105'
               : available
                 ? 'bg-white text-[#1C3D1C] border-2 border-[#1C3D1C]/20 hover:border-[#1C3D1C]/50 hover:shadow-sm'
                 : 'bg-white/50 text-[#1C3D1C]/30 border-2 border-[#1C3D1C]/10 cursor-not-allowed'

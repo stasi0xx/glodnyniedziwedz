@@ -48,16 +48,53 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-100 h-16 overflow-visible bg-[#1B4332] shadow-lg [transform:translateZ(0)] [backface-visibility:hidden]">
-      <div className="mx-auto max-w-2xl px-5 py-3.5">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto max-w-full px-6 h-full">
+        <div className="relative flex items-center justify-between h-full">
           {/* Logo */}
           <Link href="/">
             <img src="/images/logo.webp" alt="Głodny Niedźwiedź" className="h-9 w-auto" />
           </Link>
 
+          {/* Desktop nav — centered */}
+          <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-7">
+            {anchorLinks.map((link) => (
+              <button
+                key={link.href}
+                onClick={() => handleNavClick(link.href)}
+                className="text-white/75 text-sm font-medium hover:text-white transition-colors"
+              >
+                {link.label}
+              </button>
+            ))}
+          </nav>
+
           {/* Right actions */}
-          <div className="flex items-center gap-3 relative" ref={menuRef}>
-            <LanguageToggle />
+          <div className="flex items-center gap-2.5 relative" ref={menuRef}>
+            {/* Language toggle */}
+            <div className="hidden lg:block">
+              <LanguageToggle />
+            </div>
+
+            {/* For businesses — desktop */}
+            <Link
+              href="/dla-firm"
+              className="hidden lg:flex items-center px-4 py-1.5 rounded-full bg-[#E8927C] text-white text-sm font-semibold hover:bg-[#e07d65] transition-colors whitespace-nowrap"
+            >
+              {t('forBusiness')}
+            </Link>
+
+            {/* My account — desktop */}
+            <Link
+              href="/konto"
+              className="hidden lg:flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/30 text-white text-sm font-semibold hover:bg-white/10 transition-colors whitespace-nowrap"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+              {t('myAccount')}
+            </Link>
+
+            {/* Cart */}
             <button
               onClick={openCart}
               className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20"
@@ -72,11 +109,11 @@ export default function Header() {
               )}
             </button>
 
-            {/* Hamburger button */}
+            {/* Hamburger button — mobile only */}
             <button
               onClick={() => setMenuOpen(prev => !prev)}
               aria-label="Menu nawigacyjne"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20"
+              className="lg:hidden relative flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20"
             >
               <span className="flex flex-col gap-[5px]">
                 <span className={`block h-[2px] w-5 bg-white rounded-full transition-all duration-200 origin-center ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
@@ -85,9 +122,9 @@ export default function Header() {
               </span>
             </button>
 
-            {/* Dropdown menu */}
+            {/* Mobile dropdown */}
             {menuOpen && (
-              <div className="absolute top-[calc(100%+8px)] right-0 z-50 w-52 rounded-2xl bg-[#1B4332] border border-white/10 shadow-2xl overflow-hidden">
+              <div className="lg:hidden absolute top-[calc(100%+8px)] right-0 z-50 w-52 rounded-2xl bg-[#1B4332] border border-white/10 shadow-2xl overflow-hidden">
                 {anchorLinks.map((link) => (
                   <button
                     key={link.href}
@@ -110,6 +147,9 @@ export default function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
+                <div className="px-3 py-2">
+                  <LanguageToggle />
+                </div>
                 <Link
                   href="/dla-firm"
                   onClick={() => setMenuOpen(false)}

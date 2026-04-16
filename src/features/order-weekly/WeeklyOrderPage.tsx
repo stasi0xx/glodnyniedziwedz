@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import MenuDayTabs from '@/components/MenuDayTabs';
 import MenuCategory from '@/components/MenuCategory';
+import MenuFilterSidebar from '@/components/MenuFilterSidebar';
+import MenuFilterModal from '@/components/MenuFilterModal';
 import CategoryIcon from '@/components/CategoryIcon';
 import CartBar from '@/components/CartBar';
 import CartDrawer from '@/components/CartDrawer';
@@ -42,6 +44,11 @@ export default function WeeklyOrderPage() {
   const availableDates = getOfficeDeliveryDates(MENU_DATES);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterVege, setFilterVege] = useState(false);
+  const [filterSpicy, setFilterSpicy] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   useEffect(() => {
     const dates = getOfficeDeliveryDates(Object.keys(menuData));
@@ -54,6 +61,15 @@ export default function WeeklyOrderPage() {
     if (dayMenu) Object.keys(dayMenu).forEach(c => { initial[c] = true; });
     setOpenCategories(initial);
   }, [selectedDate, menuData]);
+
+  useEffect(() => {
+    if (!searchQuery && !filterVege && !filterSpicy && !filterCategory) return;
+    const el = document.getElementById('menu-section');
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 64;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }, [searchQuery, filterVege, filterSpicy, filterCategory]);
 
   const scrollToCategory = (category: string) => {
     setOpenCategories(prev => ({ ...prev, [category]: true }));
@@ -87,8 +103,28 @@ export default function WeeklyOrderPage() {
 
   const dayMenu = selectedDate ? (menuData[selectedDate] as Record<string, CategoryData> | undefined) : undefined;
   const categories = dayMenu ? Object.keys(dayMenu) : [];
-  const filteredCategories = categories;
-  const getdishes = (cat: string) => dayMenu?.[cat] ?? [];
+
+  const getdishes = (cat: string) => {
+    const dishes = dayMenu?.[cat] ?? [];
+    return dishes.filter((dish) => {
+      if (filterVege && !dish.is_vege) return false;
+      if (filterSpicy && !dish.is_spicy) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const nameMatch = dish.nazwa.toLowerCase().includes(q);
+        const translationMatch = dish.name_translations
+          ? Object.values(dish.name_translations).some((n) => n.toLowerCase().includes(q))
+          : false;
+        if (!nameMatch && !translationMatch) return false;
+      }
+      return true;
+    });
+  };
+
+  const filteredCategories = categories
+    .filter((cat) => !filterCategory || cat === filterCategory)
+    .filter((cat) => getdishes(cat).length > 0);
+  const totalFilteredDishes = filteredCategories.reduce((sum, cat) => sum + getdishes(cat).length, 0);
 
   const orderDeadline = selectedDate ? getOrderDeadline(selectedDate) : null;
   const deadlineFormatted = orderDeadline
@@ -150,7 +186,8 @@ export default function WeeklyOrderPage() {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 md:px-8 relative z-10">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 relative z-10">
+          {/* Sticky day tabs + category pills */}
           <div className="sticky top-16 z-20 bg-[#FDF6EC] pt-3 md:pt-4 lg:pt-5 pb-2 md:pb-3 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 shadow-sm">
             <MenuDayTabs
               dates={MENU_DATES}
@@ -159,53 +196,87 @@ export default function WeeklyOrderPage() {
               availableDates={availableDates}
             />
             {categories.length > 0 && (
-              <div className="flex gap-2 mt-2 w-max mx-auto max-w-full overflow-x-auto scrollbar-hide px-1 pb-1">
-                {categories.map((category) => {
-                  const label = tCat(category as Parameters<typeof tCat>[0]);
-                  const firstWord = label.split(' ')[0];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => scrollToCategory(category)}
-                      className="flex-shrink-0 flex items-center gap-1.5 rounded-full bg-white border border-[#1B4332]/20 px-3 py-1 text-[#1B4332] transition-all hover:border-[#1B4332]/50 hover:shadow-sm active:scale-95"
-                    >
-                      <CategoryIcon category={category} className="h-3.5 w-3.5 text-[#ed8788]" />
-                      <span className="text-[11px] font-semibold whitespace-nowrap">{firstWord}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <>
+                {/* Mobile: Filtruj button */}
+                <div className="lg:hidden flex items-center justify-center gap-2 mt-2 pb-1">
+                  <button
+                    onClick={() => setFilterModalOpen(true)}
+                    className="flex items-center gap-2 rounded-full bg-white border border-[#1B4332]/20 px-4 py-1.5 text-[#1B4332] transition-all hover:border-[#1B4332]/50 hover:shadow-sm active:scale-95"
+                  >
+                    <svg className="h-3.5 w-3.5 text-[#ed8788]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M7 12h10M11 20h2" />
+                    </svg>
+                    <span className="text-[11px] font-semibold">Filtruj</span>
+                    {(searchQuery || filterVege || filterSpicy || filterCategory) && (
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#E8967A] text-white text-[9px] font-bold">
+                        {[searchQuery, filterVege, filterSpicy, filterCategory].filter(Boolean).length}
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                {/* Desktop: category pills */}
+                <div className="hidden lg:flex gap-2 mt-2 w-max mx-auto max-w-full overflow-x-auto scrollbar-hide px-1 pb-1">
+                  {categories.map((category) => {
+                    const label = tCat(category as Parameters<typeof tCat>[0]);
+                    const firstWord = label.split(' ')[0];
+                    return (
+                      <button
+                        key={category}
+                        onClick={() => scrollToCategory(category)}
+                        className="flex-shrink-0 flex items-center gap-1.5 rounded-full bg-white border border-[#1B4332]/20 px-3 py-1 text-[#1B4332] transition-all hover:border-[#1B4332]/50 hover:shadow-sm active:scale-95"
+                      >
+                        <CategoryIcon category={category} className="h-3.5 w-3.5 text-[#ed8788]" />
+                        <span className="text-[11px] font-semibold whitespace-nowrap">{firstWord}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
 
-          <div className="pb-32 pt-4">
-            {availableDates.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <span className="text-6xl mb-4">🐻</span>
-                <p className="font-heading font-black text-2xl text-[#1B4332]">{t('noAvailableDays')}</p>
-              </div>
-            ) : dayMenu ? (
-              <div className="flex flex-col gap-3">
-                {filteredCategories.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <span className="text-5xl mb-3">🐻</span>
-                    <p className="font-heading font-black text-lg text-[#1B4332]">Brak wyników</p>
-                    <p className="text-sm text-[#1B4332]/50 mt-1">Spróbuj innej nazwy</p>
-                  </div>
-                ) : (
-                  filteredCategories.map((category) => (
-                    <MenuCategory
-                      key={category}
-                      category={category}
-                      dishes={getdishes(category)}
-                      date={selectedDate}
-                      isOpen={openCategories[category] ?? true}
-                      onToggle={() => setOpenCategories(prev => ({ ...prev, [category]: !(prev[category] ?? true) }))}
-                    />
-                  ))
-                )}
-              </div>
-            ) : null}
+          {/* Main content: sidebar + menu grid */}
+          <div className="flex gap-6 xl:gap-8 pt-4 pb-32">
+            <MenuFilterSidebar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              filterVege={filterVege}
+              onVegeChange={setFilterVege}
+              filterSpicy={filterSpicy}
+              onSpicyChange={setFilterSpicy}
+              totalResults={totalFilteredDishes}
+            />
+
+            <div className="flex-1 min-w-0">
+              {availableDates.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <span className="text-6xl mb-4">🐻</span>
+                  <p className="font-heading font-black text-2xl text-[#1B4332]">{t('noAvailableDays')}</p>
+                </div>
+              ) : dayMenu ? (
+                <div className="flex flex-col gap-3">
+                  {filteredCategories.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <span className="text-5xl mb-3">🐻</span>
+                      <p className="font-heading font-black text-lg text-[#1B4332]">Brak wyników</p>
+                      <p className="text-sm text-[#1B4332]/50 mt-1">Spróbuj innej nazwy</p>
+                    </div>
+                  ) : (
+                    filteredCategories.map((category) => (
+                      <MenuCategory
+                        key={category}
+                        category={category}
+                        dishes={getdishes(category)}
+                        date={selectedDate}
+                        isOpen={openCategories[category] ?? true}
+                        onToggle={() => setOpenCategories(prev => ({ ...prev, [category]: !(prev[category] ?? true) }))}
+                      />
+                    ))
+                  )}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -215,6 +286,20 @@ export default function WeeklyOrderPage() {
       <FaqSection />
       <FooterSection />
 
+      <MenuFilterModal
+        isOpen={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filterVege={filterVege}
+        onVegeChange={setFilterVege}
+        filterSpicy={filterSpicy}
+        onSpicyChange={setFilterSpicy}
+        filterCategory={filterCategory}
+        onCategoryChange={setFilterCategory}
+        categories={categories}
+        totalResults={totalFilteredDishes}
+      />
       <CartBar />
       <CartDrawer />
     </div>

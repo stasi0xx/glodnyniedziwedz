@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useCartStore, parsePrice, ONLINE_DISCOUNT } from '@/store/cart';
 import { getSiteConfig } from '@/config/sites';
 import { useTranslations } from 'next-intl';
@@ -45,11 +46,13 @@ interface DishModalProps {
 
 export default function DishModal({ id, name, category, priceStr, date, onClose }: DishModalProps) {
   const t = useTranslations('menu');
-  const { items, addItem } = useCartStore();
+  const { items, addItem, removeItem, updateQuantity } = useCartStore();
+  const [closing, setClosing] = useState(false);
 
   const originalPrice = parsePrice(priceStr);
   const discountedPrice = parseFloat((originalPrice * (1 - ONLINE_DISCOUNT)).toFixed(2));
-  const inCart = items.some((i) => i.id === id && i.date === date);
+  const cartItem = items.find((i) => i.id === id && i.date === date);
+  const quantity = cartItem?.quantity ?? 0;
 
   // Zablokuj scroll body gdy modal otwarty
   useEffect(() => {
@@ -57,21 +60,33 @@ export default function DishModal({ id, name, category, priceStr, date, onClose 
     return () => { document.body.style.overflow = ''; };
   }, []);
 
-  const handleAdd = () => {
-    addItem({ id, name, category, originalPrice, date });
-    onClose();
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(onClose, 350);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+  const handleAdd = () => {
+    addItem({ id, name, category, originalPrice, date });
+  };
+
+  const handleDecrease = () => {
+    if (quantity === 1) {
+      removeItem(id, date);
+    } else {
+      updateQuantity(id, date, quantity - 1);
+    }
+  };
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        className={`absolute inset-0 bg-black/50 backdrop-blur-sm ${closing ? 'animate-fade-out' : 'animate-fade-in'}`}
+        onClick={handleClose}
       />
 
       {/* Sheet */}
-      <div className="relative w-full max-w-2xl max-h-[92dvh] flex flex-col rounded-t-3xl bg-[#FDF6EC] overflow-hidden shadow-2xl animate-slide-up">
+      <div className={`relative w-full max-w-2xl max-h-[92dvh] flex flex-col rounded-t-3xl bg-[#FDF6EC] overflow-hidden shadow-2xl ${closing ? 'animate-slide-down' : 'animate-slide-up'}`}>
 
         {/* Image */}
         <div className="relative flex-shrink-0 h-52 bg-[#1B4332]/10">
@@ -81,7 +96,7 @@ export default function DishModal({ id, name, category, priceStr, date, onClose 
             className="w-full h-full object-cover"
           />
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -184,19 +199,38 @@ export default function DishModal({ id, name, category, priceStr, date, onClose 
 
         {/* Sticky bottom CTA */}
         <div className="flex-shrink-0 px-5 py-4 bg-[#FDF6EC] border-t border-[#1B4332]/10">
-          <button
-            onClick={handleAdd}
-            disabled={inCart}
-            className={`w-full rounded-2xl py-3.5 font-bold text-base transition-all active:scale-[0.98] ${
-              inCart
-                ? 'bg-[#1B4332]/20 text-[#1B4332]/50 cursor-default'
-                : 'bg-[#1B4332] text-white hover:bg-[#2d5a2d]'
-            }`}
-          >
-            {inCart ? t('inCart') : `+ ${t('addToCart')} — ${formatPrice(discountedPrice)}`}
-          </button>
+          {quantity === 0 ? (
+            <button
+              onClick={handleAdd}
+              className="w-full rounded-2xl py-3.5 font-bold text-base bg-[#1B4332] text-white hover:bg-[#2d5a2d] transition-all active:scale-[0.98]"
+            >
+              + {t('addToCart')} — {formatPrice(discountedPrice)}
+            </button>
+          ) : (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 rounded-2xl bg-[#1B4332] px-2 h-[52px] flex-1">
+                <button
+                  onClick={handleDecrease}
+                  className="flex h-[38px] w-[38px] items-center justify-center rounded-xl bg-white/20 text-white font-bold text-xl hover:bg-white/30 transition-colors"
+                >
+                  −
+                </button>
+                <span className="flex-1 text-center text-lg font-bold text-white">{quantity}</span>
+                <button
+                  onClick={handleAdd}
+                  className="flex h-[38px] w-[38px] items-center justify-center rounded-xl bg-white/20 text-white font-bold text-xl hover:bg-white/30 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+              <span className="text-base font-extrabold text-[#1B4332] shrink-0">
+                {formatPrice(parseFloat((discountedPrice * quantity).toFixed(2)))}
+              </span>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
