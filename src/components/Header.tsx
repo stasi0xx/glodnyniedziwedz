@@ -94,6 +94,11 @@ export default function Header() {
               {t('myAccount')}
             </Link>
 
+            {/* Language toggle — mobile only, in top bar */}
+            <div className="lg:hidden">
+              <LanguageToggle />
+            </div>
+
             {/* Cart */}
             <button
               onClick={openCart}
@@ -147,9 +152,6 @@ export default function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
-                <div className="px-3 py-2">
-                  <LanguageToggle />
-                </div>
                 <Link
                   href="/dla-firm"
                   onClick={() => setMenuOpen(false)}
